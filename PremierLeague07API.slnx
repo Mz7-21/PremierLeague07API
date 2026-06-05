@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="BussinesLayer/BussinesLayer.csproj" />
+  <Project Path="DataAccesLayer/DataAccessLayer.csproj" />
+  <Project Path="DTOLayer/DTOLayer.csproj" Id="225e72b6-28f6-40c6-ac4a-9423db2ad232" />
+  <Project Path="EntityLayer/EntityLayer.csproj" />
+  <Project Path="PremierLigApi/PremierLigApi.csproj" />
+  <Project Path="PremierLigUi/PremierLigUi.csproj" />
+</Solution>

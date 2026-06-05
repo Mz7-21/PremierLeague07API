@@ -1,0 +1,6 @@
+@PremierLigApi_HostAddress = http://localhost:5164
+
+GET {{PremierLigApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
