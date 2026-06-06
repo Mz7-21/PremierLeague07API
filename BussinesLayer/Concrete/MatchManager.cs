@@ -40,6 +40,16 @@ namespace BussinesLayer.Concrete
             return _matchDal.GetList();
         }
 
+        public Match GetMatchDetails(int id)
+        {
+            return _matchDal.GetMatchDetails(id);
+        }
+
+        public List<Match> GetMatchesWithTeams()
+        {
+            return _matchDal.GetMatchesWithTeams();
+        }
+
         public void Update(Match match)
         {
             _matchDal.Update(match);

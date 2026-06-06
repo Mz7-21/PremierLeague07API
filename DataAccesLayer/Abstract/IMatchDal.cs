@@ -9,5 +9,8 @@ namespace DataAccessLayer.Abstract
 {
     public interface IMatchDal : IGenericDal<Match>
     {
+        Match GetMatchDetails(int id);
+        List<Match> GetMatchesWithTeams();
+       
     }
 }

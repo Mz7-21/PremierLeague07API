@@ -2,6 +2,7 @@
 using DataAccessLayer.Context;
 using DataAccessLayer.Repositories;
 using EntityLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,30 @@ namespace DataAccessLayer.EntityFramework
 {
     public class EfMatchDal :GenericRepository<Match> ,IMatchDal
     {
-        public EfMatchDal(PremierLeagueContext context) : base(context)
+        private readonly PremierLeagueContext _context;
+
+        public EfMatchDal(PremierLeagueContext context):base(context)
         {
+            _context = context;
+        }
+
+        public Match GetMatchDetails(int id)
+        {
+            return _context.Matches
+                .Include(x => x.HomeTeam)
+                .Include(x=> x.AwayTeam)
+                .Include(x=>x.MatchEvents)
+                .Include(x=> x.MatchStatistic)
+                .FirstOrDefault(x => x.MatchId == id);
+
+        }
+
+        public List<Match> GetMatchesWithTeams()
+        {
+            return _context.Matches
+                .Include(x => x.HomeTeam)
+                .Include(x => x.AwayTeam)
+                .ToList();
         }
     }
 }

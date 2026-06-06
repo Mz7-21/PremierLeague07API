@@ -14,5 +14,7 @@ namespace BussinesLayer.Abstract
         void Update(Match match);
         List<Match> GetList();
         Match GetById(int id);
+        Match GetMatchDetails(int id);
+        List<Match> GetMatchesWithTeams();
     }
 }

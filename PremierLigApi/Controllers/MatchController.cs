@@ -3,6 +3,8 @@ using BussinesLayer.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PremierLigApi.Dtos.MatchDtos;
+using PremierLigApi.Dtos.MatchEventDtos;
+using PremierLigApi.Dtos.MatchStatisticDtos;
 
 namespace PremierLigApi.Controllers
 {
@@ -57,6 +59,46 @@ namespace PremierLigApi.Controllers
 
             _matchService.Delete(match);
             return Ok("Maç Silindi");
+        }
+        [HttpGet("detail/{id}")]
+        public IActionResult GetMatchDetail(int id)
+        {
+            var match = _matchService.GetMatchDetails(id);
+            if (match == null)
+                return NotFound("Maç Detayı Bulunamadı");
+            var dto = new GetMatchDetailDto
+            {
+                MatchId = match.MatchId,
+                HomeTeam = match.HomeTeam.Name,
+                AwayTeam = match.AwayTeam.Name,
+                HomeScore = match.HomeScore,
+                AwayScore = match.AwayScore,
+                MatchDate = match.MatchDate,
+                Statistics = match.MatchStatistic == null ? null : new ResultMatchStatisticDto
+                {
+                    MatchStatisticId = match.MatchStatistic.MatchStatisticId,
+                    MatchId = match.MatchStatistic.MatchId,
+                    HomeFirstHalfGoals = match.MatchStatistic.HomeFirstHalfGoals,
+                    AwayFirstHalfGoals = match.MatchStatistic.AwayFirstHalfGoals,
+                    HomeSecondHalfGoals = match.MatchStatistic.HomeSecondHalfGoals,
+                    AwaySecondHalfGoals = match.MatchStatistic.AwaySecondHalfGoals,
+                    HomeYellowCards = match.MatchStatistic.HomeYellowCards,
+                    AwayYellowCards = match.MatchStatistic.AwayYellowCards,
+                    HomeRedCards = match.MatchStatistic.HomeRedCards,
+                    AwayRedCards = match.MatchStatistic.AwayRedCards
+                },
+                Events = match.MatchEvents.Select(e => new ResultMatchEventDto
+                {
+                    MatchEventId = e.MatchEventId,
+                    MatchId = e.MatchId,
+                    TeamId = e.TeamId,
+                    Minute = e.Minute,
+                    ActionType = e.ActionType,
+                    Description = e.Description
+
+                }).ToList()
+            };
+            return Ok(dto);
         }
     }
 }
