@@ -43,5 +43,9 @@ namespace BussinesLayer.Concrete
         {
             _matchEventDal.Update(matchEvent);
         }
+        public List<MatchEvent> GetEventsByMatchId(int matchId)
+        {
+            return _matchEventDal.GetEventsByMatchId(matchId);
+        }
     }
 }

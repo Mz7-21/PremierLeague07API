@@ -1,0 +1,360 @@
+﻿@model List<PremierLigUi.Models.AdminTeamViewModel>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .team-page-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .team-title h5 {
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .team-title small {
+        color: #7b96c4;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+    }
+
+    .team-card {
+        background: #111827;
+        border: 1px solid #1a2640;
+        border-radius: 16px;
+        padding: 18px;
+        transition: .2s;
+    }
+
+        .team-card:hover {
+            transform: translateY(-3px);
+            border-color: #2979ff;
+            background: #16202f;
+        }
+
+    .team-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .team-logo {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #1c2d42;
+        border: 1px solid #263855;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+        .team-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 7px;
+        }
+
+    .team-name {
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+    .team-short {
+        color: #00e676;
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+
+    .team-info {
+        border-top: 1px solid #1a2640;
+        padding-top: 12px;
+        margin-top: 10px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+
+        .info-row span:first-child {
+            color: #7b96c4;
+        }
+
+        .info-row span:last-child {
+            color: #eef2ff;
+            text-align: right;
+            font-weight: 600;
+        }
+
+    .team-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+        .team-actions button {
+            flex: 1;
+        }
+
+    .admin-modal {
+        background: #111827;
+        color: #eef2ff;
+        border: 1px solid #1a2640;
+        border-radius: 16px;
+    }
+
+        .admin-modal .modal-header,
+        .admin-modal .modal-footer {
+            border-color: #1a2640;
+        }
+
+        .admin-modal label {
+            color: #7b96c4;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+    .admin-input {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        color: #eef2ff;
+    }
+
+        .admin-input:focus {
+            background: #0c1220;
+            border-color: #2979ff;
+            color: #eef2ff;
+            box-shadow: none;
+        }
+</style>
+
+<div class="team-page-head">
+    <div class="team-title">
+        <h5>Takımlar</h5>
+        <small>Premier League 2007/08 sezonundaki @(Model?.Count ?? 0) takım</small>
+    </div>
+
+    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addTeamModal">
+        <i class="bi bi-plus-circle"></i> Yeni Takım
+    </button>
+</div>
+
+<div class="team-grid">
+    @foreach (var item in Model!)
+    {
+        <div class="team-card">
+            <div class="team-top">
+                <div class="team-logo">
+                    <img src="@item.LogoUrl"
+                         alt="@item.Name"
+                         onerror="this.parentNode.textContent='@item.ShortName'" />
+                </div>
+
+                <div>
+                    <div class="team-name">@item.Name</div>
+                    <div class="team-short">@item.ShortName</div>
+                </div>
+            </div>
+
+            <div class="team-info">
+                <div class="info-row">
+                    <span>ID</span>
+                    <span>@item.TeamId</span>
+                </div>
+
+                <div class="info-row">
+                    <span>Şehir</span>
+                    <span>@item.City</span>
+                </div>
+
+                <div class="info-row">
+                    <span>Stadyum</span>
+                    <span>@item.StadiumName</span>
+                </div>
+            </div>
+
+            <div class="team-actions">
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editTeamModal"
+                        onclick="fillEditTeamModal('@item.TeamId', '@item.Name', '@item.ShortName', '@item.LogoUrl', '@item.City', '@item.StadiumName')">
+                    <i class="bi bi-pencil"></i> Düzenle
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteTeamModal"
+                        onclick="fillDeleteTeamModal('@item.TeamId', '@item.Name')">
+                    <i class="bi bi-trash"></i> Sil
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ADD TEAM MODAL -->
+<div class="modal fade" id="addTeamModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal">
+            <form method="post" action="/Admin/Team/Create">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Takım Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Takım Adı</label>
+                        <input type="text" name="Name" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kısa Ad</label>
+                        <input type="text" name="ShortName" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Logo URL</label>
+                        <input type="text" name="LogoUrl" class="form-control admin-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Şehir</label>
+                        <input type="text" name="City" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Stadyum</label>
+                        <input type="text" name="StadiumName" class="form-control admin-input" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-success btn-sm">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- EDIT TEAM MODAL -->
+<div class="modal fade" id="editTeamModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal">
+            <form method="post" action="/Admin/Team/Update">
+                <div class="modal-header">
+                    <h5 class="modal-title">Takımı Düzenle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="TeamId" id="editTeamId" />
+
+                    <div class="mb-3">
+                        <label>Takım Adı</label>
+                        <input type="text" name="Name" id="editName" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kısa Ad</label>
+                        <input type="text" name="ShortName" id="editShortName" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Logo URL</label>
+                        <input type="text" name="LogoUrl" id="editLogoUrl" class="form-control admin-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Şehir</label>
+                        <input type="text" name="City" id="editCity" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Stadyum</label>
+                        <input type="text" name="StadiumName" id="editStadiumName" class="form-control admin-input" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- DELETE TEAM MODAL -->
+<div class="modal fade" id="deleteTeamModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal">
+            <form method="post" action="/Admin/Team/Delete">
+                <div class="modal-header">
+                    <h5 class="modal-title">Takımı Sil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="deleteTeamId" />
+
+                    <p>
+                        <strong id="deleteTeamName"></strong> takımını silmek istediğine emin misin?
+                    </p>
+
+                    <small style="color:#ff1744">
+                        Bu işlem daha sonra maç verileriyle ilişkiliyse sorun çıkarabilir.
+                    </small>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    function fillEditTeamModal(teamId, name, shortName, logoUrl, city, stadiumName) {
+        document.getElementById('editTeamId').value = teamId;
+        document.getElementById('editName').value = name;
+        document.getElementById('editShortName').value = shortName;
+        document.getElementById('editLogoUrl').value = logoUrl;
+        document.getElementById('editCity').value = city;
+        document.getElementById('editStadiumName').value = stadiumName;
+    }
+
+    function fillDeleteTeamModal(teamId, name) {
+        document.getElementById('deleteTeamId').value = teamId;
+        document.getElementById('deleteTeamName').innerText = name;
+    }
+</script>

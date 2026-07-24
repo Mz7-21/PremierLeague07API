@@ -12,6 +12,7 @@ namespace DTOLayer.StandingDtos
 
         public int TeamId { get; set; }
         public string TeamName { get; set; }
+        public string LogoUrl { get; set; }
 
         public int Played { get; set; }
         public int Won { get; set; }

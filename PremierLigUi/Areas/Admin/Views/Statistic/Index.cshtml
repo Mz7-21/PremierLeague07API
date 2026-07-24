@@ -1,0 +1,289 @@
+﻿@model PremierLigUi.Models.AdminStatisticViewModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var matches = ViewBag.Matches as List<PremierLigUi.Models.AdminMatchViewModel>;
+    int selectedMatchId = ViewBag.SelectedMatchId;
+    var selectedMatch = matches?.FirstOrDefault(x => x.MatchId == selectedMatchId);
+}
+
+<style>
+    .stat-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .stat-title h5 {
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .stat-title small {
+        color: #7b96c4;
+    }
+
+    .stat-select, .admin-input {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        color: #eef2ff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        width: 100%;
+        outline: none;
+    }
+
+    .stat-form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .stat-box {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        border-radius: 14px;
+        padding: 16px;
+    }
+
+        .stat-box label {
+            color: #7b96c4;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+    .stat-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 18px;
+    }
+
+    .match-summary-card {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        border-radius: 16px;
+        padding: 18px;
+        margin: 18px 0;
+    }
+
+    .match-summary-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .match-summary-team {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 220px;
+    }
+
+        .match-summary-team.away {
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+    .match-summary-logo {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #1c2d42;
+        border: 1px solid #263855;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+        .match-summary-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 6px;
+        }
+
+    .match-summary-name {
+        font-weight: 800;
+        font-size: 17px;
+    }
+
+    .match-summary-type {
+        color: #7b96c4;
+        font-size: 12px;
+    }
+
+    .match-summary-score {
+        background: #111827;
+        border: 1px solid #1a2640;
+        border-radius: 14px;
+        padding: 12px 22px;
+        font-size: 28px;
+        font-weight: 900;
+        color: #00e676;
+        min-width: 110px;
+        text-align: center;
+    }
+
+    .match-summary-meta {
+        border-top: 1px solid #1a2640;
+        margin-top: 16px;
+        padding-top: 14px;
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        color: #7b96c4;
+        font-size: 13px;
+    }
+</style>
+
+<div class="admin-card">
+    <div class="stat-head">
+        <div class="stat-title">
+            <h5>Maç İstatistikleri</h5>
+            <small>Seçilen maçın ilk yarı, ikinci yarı, kart istatistikleri</small>
+        </div>
+    </div>
+
+    <form method="get" action="/Admin/Statistic" class="mb-3">
+        <select name="matchId" class="stat-select" onchange="this.form.submit()">
+            @foreach (var match in matches!)
+            {
+                if (match.MatchId == selectedMatchId)
+                {
+                    <option value="@match.MatchId" selected>
+                        #@match.MatchId - Hafta @match.Week - @match.HomeTeam @match.HomeScore-@match.AwayScore @match.AwayTeam
+                    </option>
+                }
+                else
+                {
+                    <option value="@match.MatchId">
+                        #@match.MatchId - Hafta @match.Week - @match.HomeTeam @match.HomeScore-@match.AwayScore @match.AwayTeam
+                    </option>
+                }
+            }
+        </select>
+    </form>
+    @if (selectedMatch != null)
+    {
+        <div class="match-summary-card">
+            <div class="match-summary-top">
+                <div class="match-summary-team">
+                    <div class="match-summary-logo">
+                        <img src="@selectedMatch.HomeTeamLogoUrl"
+                             alt="@selectedMatch.HomeTeam"
+                             onerror="this.parentNode.textContent='EV'" />
+                    </div>
+
+                    <div>
+                        <div class="match-summary-name">@selectedMatch.HomeTeam</div>
+                        <div class="match-summary-type">Ev Sahibi</div>
+                    </div>
+                </div>
+
+                <div class="match-summary-score">
+                    @selectedMatch.HomeScore - @selectedMatch.AwayScore
+                </div>
+
+                <div class="match-summary-team away">
+                    <div>
+                        <div class="match-summary-name">@selectedMatch.AwayTeam</div>
+                        <div class="match-summary-type">Deplasman</div>
+                    </div>
+
+                    <div class="match-summary-logo">
+                        <img src="@selectedMatch.AwayTeamLogoUrl"
+                             alt="@selectedMatch.AwayTeam"
+                             onerror="this.parentNode.textContent='DEP'" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-summary-meta">
+                <span>
+                    <i class="bi bi-calendar3"></i>
+                    @selectedMatch.MatchDate.ToString("dd.MM.yyyy HH:mm")
+                </span>
+
+                <span>
+                    <i class="bi bi-trophy"></i>
+                    Hafta @selectedMatch.Week
+                </span>
+
+                <span>
+                    <i class="bi bi-geo-alt"></i>
+                    @selectedMatch.Stadium
+                </span>
+            </div>
+        </div>
+    }
+
+    @if (Model == null)
+    {
+        <div class="alert alert-warning">
+            Bu maça ait istatistik kaydı bulunamadı.
+        </div>
+    }
+    else
+    {
+        <form method="post" action="/Admin/Statistic/Update">
+            <input type="hidden" name="MatchStatisticId" value="@Model.MatchStatisticId" />
+            <input type="hidden" name="MatchId" value="@Model.MatchId" />
+
+            <div class="stat-form-grid">
+                <div class="stat-box">
+                    <label>Ev İlk Yarı Gol</label>
+                    <input type="number" name="HomeFirstHalfGoals" value="@Model.HomeFirstHalfGoals" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Deplasman İlk Yarı Gol</label>
+                    <input type="number" name="AwayFirstHalfGoals" value="@Model.AwayFirstHalfGoals" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Ev İkinci Yarı Gol</label>
+                    <input type="number" name="HomeSecondHalfGoals" value="@Model.HomeSecondHalfGoals" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Deplasman İkinci Yarı Gol</label>
+                    <input type="number" name="AwaySecondHalfGoals" value="@Model.AwaySecondHalfGoals" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Ev Sarı Kart</label>
+                    <input type="number" name="HomeYellowCards" value="@Model.HomeYellowCards" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Deplasman Sarı Kart</label>
+                    <input type="number" name="AwayYellowCards" value="@Model.AwayYellowCards" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Ev Kırmızı Kart</label>
+                    <input type="number" name="HomeRedCards" value="@Model.HomeRedCards" class="admin-input" />
+                </div>
+
+                <div class="stat-box">
+                    <label>Deplasman Kırmızı Kart</label>
+                    <input type="number" name="AwayRedCards" value="@Model.AwayRedCards" class="admin-input" />
+                </div>
+            </div>
+
+            <div class="stat-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> İstatistikleri Güncelle
+                </button>
+            </div>
+        </form>
+    }
+</div>

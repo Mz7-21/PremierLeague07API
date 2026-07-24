@@ -14,5 +14,6 @@ namespace BussinesLayer.Abstract
         void Delete(MatchEvent matchEvent);
         void Update(MatchEvent matchEvent);
         MatchEvent GetById(int id);
+        List<MatchEvent> GetEventsByMatchId(int matchId);
     }
 }

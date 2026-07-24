@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "PremierLigApi\\PremierLigApi.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "PremierLigUi\\PremierLigUi.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

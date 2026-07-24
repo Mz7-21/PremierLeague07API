@@ -11,6 +11,7 @@ namespace PremierLigApi.Dtos.MatchEventDtos
         public int Minute { get; set; }
 
         public MatchActionType ActionType { get; set; }
+        public string? PlayerName { get; set; }
 
         public string Description { get; set; }
     }

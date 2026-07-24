@@ -1,0 +1,14 @@
+﻿namespace PremierLigUi.Models
+{
+    public class AdminTeamViewModel
+    {
+
+        public int TeamId { get; set; }
+
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public string LogoUrl { get; set; }
+        public string City { get; set; }
+        public string StadiumName { get; set; }
+    }
+}

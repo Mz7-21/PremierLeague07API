@@ -12,11 +12,16 @@ namespace PremierLigApi.Dtos.MatchDtos
 
         public int HomeScore { get; set; }
         public int AwayScore { get; set; }
+        public string HomeTeamLogoUrl { get; set; }
+        public string AwayTeamLogoUrl { get; set; }
+
+        public string Stadium { get; set; }
+        public int Week { get; set; }
 
         public DateTime MatchDate { get; set; }
 
-        public List<ResultMatchEventDto> Events { get; set; }
+        public List<ResultMatchEventDto>? Events { get; set; }
 
-        public ResultMatchStatisticDto Statistics { get; set; }
+        public ResultMatchStatisticDto? Statistics { get; set; }
     }
 }

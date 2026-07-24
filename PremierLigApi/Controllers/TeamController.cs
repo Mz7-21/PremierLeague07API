@@ -1,7 +1,9 @@
-﻿using BussinesLayer.Abstract;
+﻿using AutoMapper;
+using BussinesLayer.Abstract;
 using EntityLayer.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PremierLigApi.Dtos.TeamDtos;
 using PremierLigApi.Mapping;
 
 namespace PremierLigApi.Controllers
@@ -11,18 +13,23 @@ namespace PremierLigApi.Controllers
     public class TeamController : ControllerBase
     {
         private readonly ITeamService _teamService;
-        private readonly MappingProfile _mappingProfile;
+        private readonly IMapper _mapper;
 
-        public TeamController(ITeamService teamService, MappingProfile mappingProfile)
+
+        public TeamController(ITeamService teamService, IMapper mapper)
         {
             _teamService = teamService;
-            _mappingProfile = mappingProfile;
+            _mapper = mapper;
         }
         [HttpGet]
         public IActionResult TeamList()
         {
             var teams = _teamService.GetList();
-            return Ok(teams);
+
+            var result = _mapper.Map<List<ResultTeamDto>>(teams);
+
+
+            return Ok(result);
         }
         [HttpGet("{id}")]
         public IActionResult GetTeam(int id)

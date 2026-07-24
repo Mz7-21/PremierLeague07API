@@ -1,0 +1,509 @@
+﻿@model List<PremierLigUi.Models.AdminMatchEventViewModel>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var matches = ViewBag.Matches as List<PremierLigUi.Models.AdminMatchViewModel>;
+    int selectedMatchId = ViewBag.SelectedMatchId;
+
+    var selectedMatch = matches?.FirstOrDefault(x => x.MatchId == selectedMatchId);
+}
+<style>
+    .event-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .event-title h5 {
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .event-title small {
+        color: #7b96c4;
+    }
+
+    .event-select {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        color: #eef2ff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        width: 100%;
+        outline: none;
+    }
+
+    .event-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin: 18px 0;
+    }
+
+    .event-stat {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        border-radius: 14px;
+        padding: 14px;
+    }
+
+        .event-stat .num {
+            font-size: 26px;
+            font-weight: 900;
+            color: #00e676;
+            line-height: 1;
+        }
+
+        .event-stat .lbl {
+            color: #7b96c4;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+    .event-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .event-card {
+        display: grid;
+        grid-template-columns: 70px 1fr auto;
+        align-items: center;
+        gap: 14px;
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        border-radius: 14px;
+        padding: 14px;
+        transition: .2s;
+    }
+
+        .event-card:hover {
+            background: #16202f;
+            border-color: #2979ff;
+            transform: translateX(3px);
+        }
+
+    .event-minute {
+        background: #111827;
+        border: 1px solid #1a2640;
+        border-radius: 12px;
+        padding: 9px 0;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 900;
+        color: #2979ff;
+    }
+
+    .event-main {
+        min-width: 0;
+    }
+
+    .event-team {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+        .event-team img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+    .event-player {
+        font-size: 15px;
+        font-weight: 800;
+        color: #eef2ff;
+    }
+
+    .event-desc {
+        color: #7b96c4;
+        font-size: 13px;
+        margin-top: 3px;
+    }
+
+    .event-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 9px;
+        border-radius: 999px;
+        margin-top: 7px;
+    }
+
+    .type-goal {
+        background: rgba(0,230,118,.12);
+        color: #00e676;
+        border: 1px solid rgba(0,230,118,.25);
+    }
+
+    .type-yellow {
+        background: rgba(255,214,0,.12);
+        color: #ffd600;
+        border: 1px solid rgba(255,214,0,.25);
+    }
+
+    .type-red {
+        background: rgba(255,23,68,.12);
+        color: #ff1744;
+        border: 1px solid rgba(255,23,68,.25);
+    }
+
+    .type-sub {
+        background: rgba(41,121,255,.12);
+        color: #2979ff;
+        border: 1px solid rgba(41,121,255,.25);
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .admin-modal {
+        background: #111827;
+        color: #eef2ff;
+        border: 1px solid #1a2640;
+        border-radius: 16px;
+    }
+
+        .admin-modal .modal-header,
+        .admin-modal .modal-footer {
+            border-color: #1a2640;
+        }
+
+    .admin-input {
+        background: #0c1220;
+        border: 1px solid #1a2640;
+        color: #eef2ff;
+    }
+
+        .admin-input:focus {
+            background: #0c1220;
+            color: #eef2ff;
+            border-color: #2979ff;
+            box-shadow: none;
+        }
+
+    .admin-modal label {
+        color: #7b96c4;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+</style>
+
+<div class="admin-card">
+    <div class="event-head">
+        <div class="event-title">
+            <h5>Maç Olayları</h5>
+            <small>Seçilen maça ait gol, kart ve oyuncu değişiklikleri</small>
+        </div>
+
+        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addEventModal">
+            <i class="bi bi-plus-circle"></i> Yeni Event
+        </button>
+    </div>
+
+    <form method="get" action="/Admin/MatchEvent">
+        <select name="matchId" class="event-select" onchange="this.form.submit()">
+            @foreach (var match in matches!)
+            {
+                if (match.MatchId == selectedMatchId)
+                {
+                    <option value="@match.MatchId" selected>
+                        #@match.MatchId - Hafta @match.Week - @match.HomeTeam @match.HomeScore-@match.AwayScore @match.AwayTeam
+                    </option>
+                }
+                else
+                {
+                    <option value="@match.MatchId">
+                        #@match.MatchId - Hafta @match.Week - @match.HomeTeam @match.HomeScore-@match.AwayScore @match.AwayTeam
+                    </option>
+                }
+            }
+        </select>
+    </form>
+
+    @{
+        var goalCount = Model?.Count(x => x.ActionType == 0) ?? 0;
+        var yellowCount = Model?.Count(x => x.ActionType == 2) ?? 0;
+        var redCount = Model?.Count(x => x.ActionType == 3) ?? 0;
+        var subCount = Model?.Count(x => x.ActionType == 4) ?? 0;
+    }
+
+    <div class="event-summary">
+        <div class="event-stat">
+            <div class="num">@goalCount</div>
+            <div class="lbl">Gol</div>
+        </div>
+
+        <div class="event-stat">
+            <div class="num" style="color:#ffd600">@yellowCount</div>
+            <div class="lbl">Sarı Kart</div>
+        </div>
+
+        <div class="event-stat">
+            <div class="num" style="color:#ff1744">@redCount</div>
+            <div class="lbl">Kırmızı Kart</div>
+        </div>
+
+        <div class="event-stat">
+            <div class="num" style="color:#2979ff">@subCount</div>
+            <div class="lbl">Oyuncu Değişikliği</div>
+        </div>
+    </div>
+
+    <div class="event-list">
+        @foreach (var item in Model!.OrderBy(x => x.Minute))
+        {
+            var typeText = item.ActionType == 0 ? "Gol"
+                : item.ActionType == 2 ? "Sarı Kart"
+                : item.ActionType == 3 ? "Kırmızı Kart"
+                : item.ActionType == 4 ? "Oyuncu Değişikliği"
+                : "Diğer";
+
+            var typeClass = item.ActionType == 0 ? "type-goal"
+                : item.ActionType == 2 ? "type-yellow"
+                : item.ActionType == 3 ? "type-red"
+                : item.ActionType == 4 ? "type-sub"
+                : "type-sub";
+
+            var typeIcon = item.ActionType == 0 ? "bi-circle-fill"
+                : item.ActionType == 2 ? "bi-square-fill"
+                : item.ActionType == 3 ? "bi-square-fill"
+                : item.ActionType == 4 ? "bi-arrow-left-right"
+                : "bi-info-circle";
+
+            <div class="event-card">
+                <div class="event-minute">@item.Minute'</div>
+
+                <div class="event-main">
+                    <div class="event-team">
+                        <img src="@item.TeamLogoUrl"
+                             onerror="this.style.display='none'" />
+                        <span>@item.TeamName</span>
+                    </div>
+
+                    <div class="event-player">
+                        @(item.PlayerName ?? "-")
+                    </div>
+
+                    <div class="event-desc">
+                        @item.Description
+                    </div>
+
+                    <div class="event-type @typeClass">
+                        <i class="bi @typeIcon"></i>
+                        @typeText
+                    </div>
+                </div>
+
+                <div class="event-actions">
+                    <button type="button"
+                            class="btn btn-outline-primary btn-sm edit-event-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editEventModal"
+                            data-event-id="@item.MatchEventId"
+                            data-match-id="@item.MatchId"
+                            data-team-id="@item.TeamId"
+                            data-action-type="@item.ActionType"
+                            data-player-name="@item.PlayerName"
+                            data-description="@item.Description"
+                            data-minute="@item.Minute">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-danger btn-sm delete-event-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteEventModal"
+                            data-event-id="@item.MatchEventId"
+                            data-match-id="@item.MatchId"
+                            data-player-name="@(item.PlayerName ?? "-")">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div class="modal fade" id="addEventModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal">
+            <form method="post" action="/Admin/MatchEvent/Create">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Event Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="MatchId" value="@selectedMatchId" />
+
+                    <div class="mb-3">
+                        <label>Takım</label>
+                        <select name="TeamId" class="form-control admin-input" required>
+                            @if (selectedMatch != null)
+                            {
+                                <option value="@selectedMatch.HomeTeamId">@selectedMatch.HomeTeam</option>
+                                <option value="@selectedMatch.AwayTeamId">@selectedMatch.AwayTeam</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Event Tipi</label>
+                        <select name="ActionType" class="form-control admin-input" required>
+                            <option value="0">Gol</option>
+                            <option value="2">Sarı Kart</option>
+                            <option value="3">Kırmızı Kart</option>
+                            <option value="4">Oyuncu Değişikliği</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Oyuncu Adı</label>
+                        <input type="text" name="PlayerName" class="form-control admin-input" placeholder="Örn: Cristiano Ronaldo" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Açıklama</label>
+                        <input type="text" name="Description" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Dakika</label>
+                        <input type="number" name="Minute" class="form-control admin-input" min="1" max="120" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-success btn-sm">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- EDIT EVENT MODAL -->
+<div class="modal fade" id="editEventModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal">
+            <form method="post" action="/Admin/MatchEvent/Update">
+                <div class="modal-header">
+                    <h5 class="modal-title">Event Düzenle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="MatchEventId" id="editEventId" />
+                    <input type="hidden" name="MatchId" id="editEventMatchId" />
+
+                    <div class="mb-3">
+                        <label>Takım</label>
+                        <select name="TeamId" id="editEventTeamId" class="form-control admin-input" required>
+                            @if (selectedMatch != null)
+                            {
+                                <option value="@selectedMatch.HomeTeamId">@selectedMatch.HomeTeam</option>
+                                <option value="@selectedMatch.AwayTeamId">@selectedMatch.AwayTeam</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Event Tipi</label>
+                        <select name="ActionType" id="editEventActionType" class="form-control admin-input" required>
+                            <option value="0">Gol</option>
+                            <option value="2">Sarı Kart</option>
+                            <option value="3">Kırmızı Kart</option>
+                            <option value="4">Oyuncu Değişikliği</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Oyuncu Adı</label>
+                        <input type="text" name="PlayerName" id="editEventPlayerName" class="form-control admin-input" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Açıklama</label>
+                        <input type="text" name="Description" id="editEventDescription" class="form-control admin-input" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Dakika</label>
+                        <input type="number" name="Minute" id="editEventMinute" class="form-control admin-input" min="1" max="120" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- DELETE EVENT MODAL -->
+<div class="modal fade" id="deleteEventModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal">
+            <form method="post" action="/Admin/MatchEvent/Delete">
+                <div class="modal-header">
+                    <h5 class="modal-title">Event Sil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="deleteEventId" />
+                    <input type="hidden" name="matchId" id="deleteEventMatchId" />
+
+                    <p>
+                        <strong id="deleteEventName"></strong> kaydını silmek istediğine emin misin?
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.edit-event-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('editEventId').value = this.dataset.eventId;
+            document.getElementById('editEventMatchId').value = this.dataset.matchId;
+            document.getElementById('editEventTeamId').value = this.dataset.teamId;
+            document.getElementById('editEventActionType').value = this.dataset.actionType;
+            document.getElementById('editEventPlayerName').value = this.dataset.playerName || '';
+            document.getElementById('editEventDescription').value = this.dataset.description || '';
+            document.getElementById('editEventMinute').value = this.dataset.minute;
+        });
+    });
+
+    document.querySelectorAll('.delete-event-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('deleteEventId').value = this.dataset.eventId;
+            document.getElementById('deleteEventMatchId').value = this.dataset.matchId;
+            document.getElementById('deleteEventName').innerText = this.dataset.playerName || 'Bu event';
+        });
+    });
+</script>

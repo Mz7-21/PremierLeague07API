@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BussinesLayer.Abstract;
+using DTOLayer.DashboardDtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PremierLigApi.Dtos.MatchDtos;
@@ -64,41 +65,123 @@ namespace PremierLigApi.Controllers
         public IActionResult GetMatchDetail(int id)
         {
             var match = _matchService.GetMatchDetails(id);
+
             if (match == null)
                 return NotFound("Maç Detayı Bulunamadı");
+
             var dto = new GetMatchDetailDto
             {
                 MatchId = match.MatchId,
+
                 HomeTeam = match.HomeTeam.Name,
                 AwayTeam = match.AwayTeam.Name,
+
+                HomeTeamLogoUrl = match.HomeTeam.LogoUrl,
+                AwayTeamLogoUrl = match.AwayTeam.LogoUrl,
+
                 HomeScore = match.HomeScore,
                 AwayScore = match.AwayScore,
+
                 MatchDate = match.MatchDate,
+                Stadium = match.Stadium,
+                Week = match.Week,
+
                 Statistics = match.MatchStatistic == null ? null : new ResultMatchStatisticDto
                 {
                     MatchStatisticId = match.MatchStatistic.MatchStatisticId,
                     MatchId = match.MatchStatistic.MatchId,
+
                     HomeFirstHalfGoals = match.MatchStatistic.HomeFirstHalfGoals,
                     AwayFirstHalfGoals = match.MatchStatistic.AwayFirstHalfGoals,
+
                     HomeSecondHalfGoals = match.MatchStatistic.HomeSecondHalfGoals,
                     AwaySecondHalfGoals = match.MatchStatistic.AwaySecondHalfGoals,
+
                     HomeYellowCards = match.MatchStatistic.HomeYellowCards,
                     AwayYellowCards = match.MatchStatistic.AwayYellowCards,
+
                     HomeRedCards = match.MatchStatistic.HomeRedCards,
                     AwayRedCards = match.MatchStatistic.AwayRedCards
                 },
-                Events = match.MatchEvents.Select(e => new ResultMatchEventDto
-                {
-                    MatchEventId = e.MatchEventId,
-                    MatchId = e.MatchId,
-                    TeamId = e.TeamId,
-                    Minute = e.Minute,
-                    ActionType = e.ActionType,
-                    Description = e.Description
 
-                }).ToList()
+                Events = match.MatchEvents
+                    .OrderBy(e => e.Minute)
+                    .Select(e => new ResultMatchEventDto
+                    {
+                        MatchEventId = e.MatchEventId,
+                        MatchId = e.MatchId,
+                        TeamId = e.TeamId,
+
+                        TeamName = e.Team?.Name ?? "",
+                        TeamLogoUrl = e.Team?.LogoUrl ?? "",
+
+                        Minute = e.Minute,
+                        ActionType = e.ActionType,
+
+                        PlayerName = e.PlayerName,
+                        Description = e.Description
+                    })
+                    .ToList()
             };
+
             return Ok(dto);
+        }
+        [HttpGet("week/{week}")]
+        public IActionResult GetMatchesByWeek(int week)
+        {
+            var values = _matchService.GetMatchesWithTeams()
+                .Where(x => x.Week == week)
+                .OrderBy(x => x.MatchDate)
+                .Select(x => new DashboardLatestMatchDto
+                {
+                    MatchId = x.MatchId,
+                    HomeTeam = x.HomeTeam?.Name ?? "-",
+                    AwayTeam = x.AwayTeam?.Name ?? "-",
+                    HomeTeamLogoUrl = x.HomeTeam?.LogoUrl ?? "",
+                    AwayTeamLogoUrl = x.AwayTeam?.LogoUrl ?? "",
+                    HomeScore = x.HomeScore,
+                    AwayScore = x.AwayScore,
+                    MatchDate = x.MatchDate,
+                    Week = x.Week,
+                    Stadium = x.Stadium
+                })
+                .ToList();
+
+            return Ok(values);
+        }
+        [HttpGet("admin-list")]
+        public IActionResult GetAdminMatchList()
+        {
+            var matches = _matchService.GetMatchesWithTeams();
+
+            var result = matches
+                .OrderBy(x => x.Week)
+                .ThenBy(x => x.MatchDate)
+                .Select(x => new
+                {
+                    MatchId = x.MatchId,
+
+                    HomeTeamId = x.HomeTeamId,
+                    AwayTeamId = x.AwayTeamId,
+
+                    HomeTeam = x.HomeTeam.Name,
+                    AwayTeam = x.AwayTeam.Name,
+
+                    HomeTeamLogoUrl = x.HomeTeam.LogoUrl,
+                    AwayTeamLogoUrl = x.AwayTeam.LogoUrl,
+
+                    HomeScore = x.HomeScore,
+                    AwayScore = x.AwayScore,
+
+                    MatchDate = x.MatchDate,
+                    Week = x.Week,
+                    Stadium = x.Stadium,
+
+                    Status = (int)x.Status
+                })
+                .ToList();
+
+            return Ok(result);
         }
     }
 }

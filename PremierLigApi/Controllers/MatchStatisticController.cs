@@ -73,5 +73,34 @@ namespace PremierLigApi.Controllers
             _matchStatisticService.Delete(value);
             return Ok("Maç istatistiği silindi");
         }
+        [HttpGet("match/{matchId}")]
+        public IActionResult GetStatisticByMatchId(int matchId)
+        {
+            var value = _matchStatisticService.GetList()
+                .FirstOrDefault(x => x.MatchId == matchId);
+
+            if (value == null)
+                return NotFound("Bu maça ait istatistik bulunamadı.");
+
+            var result = new
+            {
+                value.MatchStatisticId,
+                value.MatchId,
+
+                value.HomeFirstHalfGoals,
+                value.AwayFirstHalfGoals,
+
+                value.HomeSecondHalfGoals,
+                value.AwaySecondHalfGoals,
+
+                value.HomeYellowCards,
+                value.AwayYellowCards,
+
+                value.HomeRedCards,
+                value.AwayRedCards
+            };
+
+            return Ok(result);
+        }
     }
 }

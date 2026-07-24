@@ -1,7 +1,32 @@
+using PremierLigUi.Services;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpClient<DashboardService>(client =>
+{
+    client.BaseAddress = new Uri(
+        builder.Configuration["ApiSettings:BaseUrl"]!);
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient<DashboardService>();
+
+builder.Services.AddHttpClient<FixtureService>();
+
+builder.Services.AddHttpClient<StandingService>();
+
+builder.Services.AddHttpClient<MatchDetailService>();
+
+builder.Services.AddHttpClient<AdminTeamService>();
+
+builder.Services.AddHttpClient<AdminMatchService>();
+
+builder.Services.AddHttpClient<AdminMatchEventService>();
+
+builder.Services.AddHttpClient<AdminStatisticService>();
 
 var app = builder.Build();
 
@@ -20,8 +45,13 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapAreaControllerRoute(
+    name: "admin",
+    areaName: "Admin",
+    pattern: "Admin/{controller=Dashboard}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
 app.Run();

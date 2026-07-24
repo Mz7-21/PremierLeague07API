@@ -85,6 +85,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("Minute")
                         .HasColumnType("int");
 
+                    b.Property<string>("PlayerName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
 

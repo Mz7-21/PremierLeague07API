@@ -92,6 +92,7 @@ namespace BussinesLayer.Concrete
                 {
                     TeamId = team.TeamId,
                     TeamName = team.Name,
+                    LogoUrl= team.LogoUrl,
                     Played = played,
                     Won = won,
                     Drawn = drawn,

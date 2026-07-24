@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GoalZone Admin Panel</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+            body {
+                background: #080d18;
+                color: #eef2ff;
+                font-family: Arial, sans-serif;
+            }
+
+            .admin-shell {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            .admin-sidebar {
+                width: 260px;
+                background: #0c1220;
+                border-right: 1px solid #1a2640;
+                padding: 22px 18px;
+            }
+
+            .admin-brand {
+                font-size: 24px;
+                font-weight: 800;
+                margin-bottom: 28px;
+            }
+
+                .admin-brand span {
+                    color: #00e676;
+                }
+
+            .admin-menu a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: #7b96c4;
+                text-decoration: none;
+                padding: 12px 14px;
+                border-radius: 8px;
+                margin-bottom: 8px;
+                font-weight: 600;
+            }
+
+                .admin-menu a:hover,
+                .admin-menu a.active {
+                    background: #16202f;
+                    color: #eef2ff;
+                }
+
+            .admin-main {
+                flex: 1;
+                padding: 28px;
+            }
+
+            .admin-topbar {
+                background: #111827;
+                border: 1px solid #1a2640;
+                border-radius: 14px;
+                padding: 18px 22px;
+                margin-bottom: 24px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .admin-card {
+                background: #111827;
+                border: 1px solid #1a2640;
+                border-radius: 14px;
+                padding: 22px;
+            }
+
+            .stat-card {
+                background: #111827;
+                border: 1px solid #1a2640;
+                border-radius: 14px;
+                padding: 22px;
+            }
+
+            .stat-value {
+                font-size: 32px;
+                font-weight: 800;
+                color: #00e676;
+            }
+
+            .stat-label {
+                color: #7b96c4;
+                font-size: 13px;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">Goal<span>Zone</span></div>
+
+            <nav class="admin-menu">
+                <a href="/Admin/Dashboard" class="active">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+
+                <a href="/Admin/Team">
+                    <i class="bi bi-shield"></i> Takımlar
+                </a>
+
+                <a href="/Admin/Match">
+                    <i class="bi bi-calendar-event"></i> Maçlar
+                </a>
+
+                <a href="/Admin/MatchEvent">
+                    <i class="bi bi-lightning-charge"></i> Maç Olayları
+                </a>
+
+                <a href="/Admin/Statistic">
+                    <i class="bi bi-bar-chart"></i> İstatistikler
+                </a>
+
+                <a href="/Dashboard/Index">
+                    <i class="bi bi-box-arrow-left"></i> Siteye Dön
+                </a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-topbar">
+                <div>
+                    <h4 class="mb-1">Admin Panel</h4>
+                    <small style="color:#7b96c4">Premier League 2007/08 yönetim ekranı</small>
+                </div>
+
+                <div>
+                    <span class="badge bg-success">Aktif</span>
+                </div>
+            </div>
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

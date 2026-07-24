@@ -9,5 +9,6 @@ namespace DataAccessLayer.Abstract
 {
     public interface IMatchEventDal: IGenericDal<MatchEvent>
     {
+        List<MatchEvent> GetEventsByMatchId(int matchId);
     }
 }

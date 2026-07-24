@@ -73,5 +73,25 @@ namespace PremierLigApi.Controllers
             _matchEventService.Delete(matchEvent);
             return Ok("Maç Olayı Silindi");
         }
+        [HttpGet("match/{matchId}")]
+        public IActionResult GetEventsByMatchId(int matchId)
+        {
+            var values = _matchEventService.GetEventsByMatchId(matchId);
+
+            var result = values.Select(x => new
+            {
+                x.MatchEventId,
+                x.MatchId,
+                x.TeamId,
+                TeamName = x.Team?.Name ?? "",
+                TeamLogoUrl = x.Team?.LogoUrl ?? "",
+                ActionType = (int)x.ActionType,
+                x.PlayerName,
+                x.Description,
+                x.Minute
+            }).ToList();
+
+            return Ok(result);
+        }
     }
 }
